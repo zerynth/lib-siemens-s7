@@ -1,0 +1,22 @@
+{
+    "dependencies": {},
+    "description": "Library for Siemens S7 Communication Protocol",
+    "fullname": "lib.siemens.s7",
+    "git_pointer": "zerynth://zerynth-libs/siemens-s7",
+    "info": {
+        "chip_manufacturer": "-",
+        "chip_name": "-",
+        "name": "Siemens S7 Library",
+        "type": "protocol"
+    },
+    "keywords": [
+        "siemens",
+        "s7",
+        "industrial",
+        "protocol"
+    ],
+    "repo": "official",
+    "title": "Siemens S7",
+    "version": "r2.2.0",
+    "whatsnew": ""
+}

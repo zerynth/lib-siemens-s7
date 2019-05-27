@@ -1,0 +1,7 @@
+
+todo before release:
+
+  - test on ethernet and change example accordingly
+  - test timers and counters on real plc to check different wordsize handling
+  - check why getcpuinfo makes the system crash
+
