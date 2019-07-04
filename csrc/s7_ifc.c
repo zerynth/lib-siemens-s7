@@ -33,10 +33,15 @@ C_NATIVE(s7_Cli_Connect) {
 
     if (parse_py_args("sii", nargs, args, &addr, &addrlen, &Rack, &Slot) != 3)
         return ERR_TYPE_EXC;
-
+    
+    uint8_t* addr_s = gc_malloc(sizeof(uint8_t) * (addrlen + 1));
+    memcpy(addr_s, addr, addrlen);
+    addr_s[addrlen] = 0;
+  
     RELEASE_GIL();
-    if (Cli_ConnectTo(Client, addr,Rack,Slot)) {
+    if (Cli_ConnectTo(Client, addr_s, Rack,Slot)) {
         ACQUIRE_GIL();
+        gc_free(addr_s);
         return ERR_IOERROR_EXC;
     };
     Cli_GetPduLength(Client, &Requested, &Negotiated);
@@ -46,6 +51,7 @@ C_NATIVE(s7_Cli_Connect) {
     PTUPLE_SET_ITEM(*res, 0, PSMALLINT_NEW(Requested));
     PTUPLE_SET_ITEM(*res, 1, PSMALLINT_NEW(Negotiated));
 
+    gc_free(addr_s);
     return ERR_OK;
 }
 
@@ -131,7 +137,10 @@ C_NATIVE(s7_Cli_ReadArea) {
 
     // TODO: db may not be needed
     RELEASE_GIL();
-    Cli_ReadArea(Client, Area, DBNumber, Start, Amount, WordLen, (void*) ((PBytes*) *res)->seq);
+    int status = Cli_ReadArea(Client, Area, DBNumber, Start, Amount, WordLen, (void*) ((PBytes*) *res)->seq);
+    if (status == -1){
+        return ERR_IOERROR_EXC;
+    }
     if (sequencetype == PSHORTS) {
         uint16_t *short_seq = ((uint16_t*) ((PBytes*) *res)->seq);
         for (i = 0; i<Amount; i++) {
